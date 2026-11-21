@@ -333,6 +333,10 @@ section[id],#formStep{scroll-margin-top:76px}
 .form{padding:20px 16px}
 .field{margin-bottom:14px}
 .field label{display:block;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:6px}
+.field select{width:100%;font:inherit;font-size:16px;border:1.5px solid #d9cce7;border-radius:12px;padding:13px 40px 13px 14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f1d6e' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/18px;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
+.field select:disabled{background-color:#f6f2fa;color:#9a90ab}
+.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(63,29,110,.1)}
+.field.bad select{border-color:var(--red)}
 .field input,.field textarea{width:100%;font:inherit;font-size:16px;border:1.5px solid #d9cce7;border-radius:12px;padding:13px 14px;background:#fff;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
 .field textarea{min-height:76px;resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(63,29,110,.1)}
@@ -357,7 +361,6 @@ section[id],#formStep{scroll-margin-top:76px}
 .field.ok .hint{color:var(--green);font-weight:700}
 .field.bad .hint{display:none}
 .opt{font-weight:600;font-size:12.5px;color:var(--muted)}
-.addr-toggle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin:2px 0 14px;padding:12px;border:1.5px dashed #d9cce7;border-radius:12px;font-weight:700;font-size:14px;color:var(--navy)}
 .step-note{margin-left:auto;font-family:"Open Sans";font-size:12px;font-weight:700;color:var(--green);background:var(--green-soft);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .msgr{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:12px;border:1.5px solid var(--line);border-radius:14px;font-size:14px;color:var(--ink);text-decoration:none}
 .msgr .ic{width:20px;height:20px;color:#0866ff}
@@ -605,23 +608,41 @@ footer .logo img{height:40px}
         </div>
       </div>
 
-      <h3 class="step" id="formStep"><span>2</span>Iwan ang number mo<small class="step-note">10 segundo lang</small></h3>
+      <h3 class="step" id="formStep"><span>2</span>Saan ipapadala?<small class="step-note">30 segundo lang</small></h3>
       <form class="card form" id="orderForm" novalidate>
+        <div class="field" data-f="name">
+          <label for="fName">Buong pangalan</label>
+          <input id="fName" name="name" autocomplete="name" placeholder="Hal. Juan Dela Cruz" enterkeyhint="next" required>
+          <div class="err">Pakilagay ang pangalan mo.</div>
+        </div>
         <div class="field phone-main" data-f="phone">
           <label for="fPhone">Mobile number</label>
-          <div class="phone"><span>+63</span><input id="fPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9XX XXX XXXX" maxlength="11" enterkeyhint="done" required></div>
-          <p class="hint" id="phoneHint">Tatawagan ka namin dito para i-confirm ang order at kunin ang address mo.</p>
+          <div class="phone"><span>+63</span><input id="fPhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="9XX XXX XXXX" maxlength="11" required></div>
+          <p class="hint" id="phoneHint">Dito ka namin tatawagan para i-confirm ang order.</p>
           <div class="err">Pakilagay ang tamang mobile number, hal. 0917 123 4567.</div>
         </div>
-        <div class="field" data-f="name">
-          <label for="fName">Pangalan <span class="opt">(optional)</span></label>
-          <input id="fName" name="name" autocomplete="given-name" placeholder="Hal. Juan">
+
+        <!-- Địa chỉ: chọn từ danh sách (dữ liệu PSGC), không phải gõ -->
+        <div id="addrPick">
+          <div class="field" data-f="province">
+            <label for="fProv">Province</label>
+            <select id="fProv" name="province" required><option value="">Naglo-load…</option></select>
+            <div class="err">Piliin ang province mo.</div>
+          </div>
+          <div class="field" data-f="citymun">
+            <label for="fCityMun">City / Municipality</label>
+            <select id="fCityMun" name="citymun" required disabled><option value="">Piliin muna ang province</option></select>
+            <div class="err">Piliin ang city o municipality mo.</div>
+          </div>
+          <div class="field" data-f="barangay">
+            <label for="fBrgy">Barangay <span class="opt">(puwedeng i-skip)</span></label>
+            <select id="fBrgy" name="barangay" disabled><option value="">Piliin muna ang city</option></select>
+          </div>
         </div>
-        <button type="button" class="addr-toggle" id="addrToggle" aria-expanded="false" aria-controls="addrBox">+ Ilagay na rin ang address <span class="opt">(optional)</span></button>
-        <div id="addrBox" hidden>
-          <div class="field" data-f="city">
-            <label for="fCity">City/Municipality at Province</label>
-            <input id="fCity" name="city" list="phCities" autocomplete="address-level2" placeholder="Hal. Makati City, Metro Manila">
+        <!-- Dự phòng khi không tải được danh sách: gõ tay -->
+        <div class="field" data-f="city" id="addrManual" hidden>
+          <label for="fCity">City/Municipality at Province</label>
+          <input id="fCity" name="city" list="phCities" autocomplete="address-level2" placeholder="Hal. Makati City, Metro Manila">
           <datalist id="phCities">
             <option value="Quezon City, Metro Manila"><option value="Manila, Metro Manila"><option value="Makati City, Metro Manila"><option value="Pasig City, Metro Manila">
             <option value="Taguig City, Metro Manila"><option value="Caloocan City, Metro Manila"><option value="Parañaque City, Metro Manila"><option value="Las Piñas City, Metro Manila">
@@ -637,11 +658,11 @@ footer .logo img{height:40px}
             <option value="Davao City, Davao del Sur"><option value="Cagayan de Oro City, Misamis Oriental"><option value="General Santos City, South Cotabato"><option value="Zamboanga City, Zamboanga del Sur">
             <option value="Butuan City, Agusan del Norte"><option value="Iligan City, Lanao del Norte"><option value="Koronadal City, South Cotabato">
           </datalist>
-          </div>
-          <div class="field" data-f="address">
-            <label for="fAddr">House no., Street, Barangay</label>
-            <textarea id="fAddr" name="address" autocomplete="street-address" placeholder="Hal. 45 Mabini St., Brgy. Poblacion"></textarea>
-          </div>
+          <div class="err">Pakilagay ang city at province.</div>
+        </div>
+        <div class="field" data-f="address">
+          <label for="fAddr">House no., Street, Landmark <span class="opt">(optional)</span></label>
+          <input id="fAddr" name="address" autocomplete="address-line1" placeholder="Hal. 45 Mabini St., malapit sa simbahan">
         </div>
         <div class="summary" aria-live="polite">
           <div><span>Package</span><b id="sTitle">-</b></div>
@@ -763,7 +784,7 @@ footer .logo img{height:40px}
     <p class="eyebrow">Paano mag-order</p>
     <h2>Tatlong hakbang lang</h2>
     <ul class="steps">
-      <li><i><svg class="ic"><use href="#i-form"/></svg></i><div><b>Punan ang form</b><p>Mobile number lang ang kailangan. Ang address, puwedeng sabihin sa tawag.</p></div></li>
+      <li><i><svg class="ic"><use href="#i-form"/></svg></i><div><b>Punan ang form</b><p>Pangalan, mobile number, at piliin lang ang province at city mo.</p></div></li>
       <li><i><svg class="ic"><use href="#i-phone"/></svg></i><div><b>Hintayin ang tawag namin</b><p>Ico-confirm namin ang order at ang delivery schedule mo.</p></div></li>
       <li><i><svg class="ic"><use href="#i-cash"/></svg></i><div><b>Bayaran pagdating</b><p>Cash on Delivery. Libre ang shipping kahit saan sa Pilipinas.</p></div></li>
     </ul>
@@ -1168,16 +1189,68 @@ footer .logo img{height:40px}
   $("sheetCta").addEventListener("click", closeSheet);
 
   /* ---------- Form ---------- */
-  var form = $("orderForm"), FIELDS = ["name", "phone", "city", "address"];
+  var form = $("orderForm"), FIELDS = ["name", "phone", "address"];
+
+  /* Địa chỉ dạng chọn: Province → City/Municipality → Barangay (dữ liệu PSGC, https://psgc.gitlab.io) */
+  var PSGC = "https://psgc.gitlab.io/api/";
+  var selProv = $("fProv"), selCity = $("fCityMun"), selBrgy = $("fBrgy"), manualAddr = false;
+  var EXTRA = {"150700000": [{code: "099701000", name: "City of Isabela"}], "153800000": [{code: "129804000", name: "City of Cotabato"}]};
+  var esc = function(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); };
+  function getList(path){
+    var key = "psgc:" + path;
+    try { var c = sessionStorage.getItem(key); if(c) return Promise.resolve(JSON.parse(c)); } catch(e) {}
+    return fetch(PSGC + path).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(d){
+      var l = d.map(function(x){ return {code: x.code, name: x.name}; });
+      try { sessionStorage.setItem(key, JSON.stringify(l)); } catch(e) {}
+      return l;
+    });
+  }
+  function fill(sel, list, ph){
+    list = list.slice().sort(function(a, b){ return a.name.localeCompare(b.name); });
+    sel.innerHTML = '<option value="">' + ph + '</option>' + list.map(function(o){ return '<option value="' + o.code + '">' + esc(o.name) + '</option>'; }).join("");
+    sel.disabled = false;
+  }
+  function useManual(){
+    manualAddr = true; $("addrPick").hidden = true; $("addrManual").hidden = false;
+  }
+  function loadCities(pc, keep){
+    selCity.disabled = true; selCity.innerHTML = '<option value="">Naglo-load…</option>';
+    selBrgy.disabled = true; selBrgy.innerHTML = '<option value="">Piliin muna ang city</option>';
+    if(!pc){ selCity.innerHTML = '<option value="">Piliin muna ang province</option>'; return Promise.resolve(); }
+    var path = pc === "NCR" ? "regions/130000000/cities-municipalities/" : "provinces/" + pc + "/cities-municipalities/";
+    return getList(path).then(function(l){ fill(selCity, l.concat(EXTRA[pc] || []), "Piliin ang city / municipality"); if(keep) selCity.value = keep; }).catch(useManual);
+  }
+  function loadBrgys(cc, keep){
+    selBrgy.disabled = true; selBrgy.innerHTML = '<option value="">' + (cc ? "Naglo-load…" : "Piliin muna ang city") + '</option>';
+    if(!cc) return Promise.resolve();
+    return getList("cities-municipalities/" + cc + "/barangays/").then(function(l){ fill(selBrgy, l, "Piliin ang barangay"); if(keep) selBrgy.value = keep; })
+      .catch(function(){ selBrgy.innerHTML = '<option value="">(Sabihin na lang sa tawag)</option>'; });
+  }
+  selProv.addEventListener("change", function(){ setBad("province", false); loadCities(this.value); saveDraft(); });
+  selCity.addEventListener("change", function(){ setBad("citymun", false); loadBrgys(this.value); saveDraft(); });
+  selBrgy.addEventListener("change", saveDraft);
+  var addrReady = getList("provinces/").then(function(l){
+    selProv.innerHTML = '<option value="">Piliin ang province</option><option value="NCR">Metro Manila (NCR)</option>' +
+      l.slice().sort(function(a, b){ return a.name.localeCompare(b.name); }).map(function(o){ return '<option value="' + o.code + '">' + esc(o.name) + '</option>'; }).join("");
+  }).catch(useManual);
+  function selText(sel){ var o = sel.options[sel.selectedIndex]; return o && o.value ? o.textContent : ""; }
 
   // Lưu nháp: khách lỡ thoát ra rồi quay lại thì thông tin đã điền vẫn còn (chỉ lưu trên máy khách)
   var DRAFT_KEY = "fh_draft";
   try {
     var draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if(draft){ FIELDS.forEach(function(n){ if(draft[n] && !form.elements[n].value) form.elements[n].value = draft[n]; }); if(draft.pkg && byId(draft.pkg) && !qp){ select(draft.pkg); setCart(); } }
+    if(draft){
+      FIELDS.concat(["city"]).forEach(function(n){ if(draft[n] && !form.elements[n].value) form.elements[n].value = draft[n]; });
+      if(draft.pkg && byId(draft.pkg) && !qp){ select(draft.pkg); setCart(); }
+      if(draft.prov) addrReady.then(function(){ if(manualAddr) return; selProv.value = draft.prov; return loadCities(draft.prov, draft.cm).then(function(){ if(draft.cm) return loadBrgys(draft.cm, draft.bg); }); });
+    }
   } catch(e) {}
   function saveDraft(){
-    try { var d = {pkg: sel.id}; FIELDS.forEach(function(n){ d[n] = form.elements[n].value; }); localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch(e) {}
+    try {
+      var d = {pkg: sel.id, prov: selProv.value, cm: selCity.value, bg: selBrgy.value, city: form.elements.city.value};
+      FIELDS.forEach(function(n){ d[n] = form.elements[n].value; });
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    } catch(e) {}
   }
   form.addEventListener("input", saveDraft);
   form.addEventListener("focusin", function(){
@@ -1191,16 +1264,13 @@ footer .logo img{height:40px}
     if(v.indexOf("0") === 0) v = v.slice(1);
     return /^9\d{9}$/.test(v) ? "+63" + v : null;
   }
-  function setBad(n, bad){ form.querySelector('[data-f="' + n + '"]').classList.toggle("bad", bad); }
-  FIELDS.forEach(function(n){ form.elements[n].addEventListener("input", function(){ setBad(n, false); }); });
-  var addrBox = $("addrBox"), addrToggle = $("addrToggle");
-  function showAddr(){ addrBox.hidden = false; addrToggle.hidden = true; addrToggle.setAttribute("aria-expanded", "true"); }
-  addrToggle.addEventListener("click", function(){ showAddr(); form.elements.city.focus(); });
-  if(form.elements.city.value || form.elements.address.value) showAddr();
+  function setBad(n, bad){ var el = form.querySelector('[data-f="' + n + '"]'); if(el) el.classList.toggle("bad", bad); }
+  ["name", "phone", "city"].forEach(function(n){ form.elements[n].addEventListener("input", function(){ setBad(n, false); }); });
+  var PHONE_HINT = "Dito ka namin tatawagan para i-confirm ang order.";
   form.elements.phone.addEventListener("input", function(){
     var ok = !!normPhone(this.value), f = this.closest(".field");
     f.classList.toggle("ok", ok);
-    $("phoneHint").textContent = ok ? "✓ Tamang number. Pindutin ang I-order sa ibaba." : "Tatawagan ka namin dito para i-confirm ang order at kunin ang address mo.";
+    $("phoneHint").textContent = ok ? "✓ Tamang number" : PHONE_HINT;
   });
   function utm(){
     var q = new URLSearchParams(location.search), o = {};
@@ -1211,15 +1281,26 @@ footer .logo img{height:40px}
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var name = form.elements.name.value.trim(), phone = normPhone(form.elements.phone.value);
-    var city = form.elements.city.value.trim(), addr = form.elements.address.value.trim();
-    FIELDS.forEach(function(n){ setBad(n, false); });
+    var street = form.elements.address.value.trim(), prov = "", cm = "", brgy = "", city = "", addr = "";
+    ["name", "phone", "province", "citymun", "city"].forEach(function(n){ setBad(n, false); });
     var ok = true;
-    if(!phone){ setBad("phone", true); ok = false; }   // chỉ bắt buộc số điện thoại
-    if(!ok){ var f = form.querySelector(".bad input, .bad textarea"); if(f) f.focus(); return; }
+    if(name.length < 2){ setBad("name", true); ok = false; }
+    if(!phone){ setBad("phone", true); ok = false; }
+    if(manualAddr){
+      city = form.elements.city.value.trim();
+      if(city.length < 3){ setBad("city", true); ok = false; }
+    } else {
+      prov = selText(selProv); cm = selText(selCity); brgy = selText(selBrgy);
+      if(!prov){ setBad("province", true); ok = false; }
+      if(!cm){ setBad("citymun", true); ok = false; }
+      city = cm + (prov ? ", " + prov : "");
+    }
+    addr = [street, brgy ? "Brgy. " + brgy : ""].filter(Boolean).join(", ");
+    if(!ok){ var f = form.querySelector(".bad input, .bad select"); if(f) f.focus(); return; }
 
     var eventId = "fh_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
     var order = Object.assign({
-      event_id: eventId, name: name, phone: phone, city: city, address: addr,
+      event_id: eventId, name: name, phone: phone, city: city, address: addr, province: prov, barangay: brgy, street: street,
       package_id: sel.id, package: sel.title, cans: sel.cans, total: sel.total,
       currency: C.CURRENCY, payment: "COD", page: location.href.split("?")[0], created_at: new Date().toISOString()
     }, utm());
@@ -1237,7 +1318,8 @@ footer .logo img{height:40px}
       $("tyPhone").textContent = phone.replace("+63", "0");
       $("tyRecap").innerHTML = '<div><span>Package</span><b>' + sel.title + '</b></div><div><span>Lata</span><b>' + sel.cans + '</b></div><div><span>Babayaran (COD)</span><b>' + peso(sel.total) + '</b></div>';
       closeSheet(); toast.classList.remove("show"); $("thanks").classList.add("open");
-      form.reset(); $("orderForm").querySelector(".phone-main").classList.remove("ok"); $("phoneHint").textContent = "Tatawagan ka namin dito para i-confirm ang order at kunin ang address mo.";
+      form.reset(); form.querySelector(".phone-main").classList.remove("ok"); $("phoneHint").textContent = PHONE_HINT;
+      loadCities("");
       try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
     }).catch(function(){
       alert("May problema sa koneksyon. Pakisubukan ulit.");
