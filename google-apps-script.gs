@@ -28,7 +28,7 @@ function doPost(e) {
     ping_(p.sid);
     return json_({ ok: true });
   }
-  if (!p.name || !p.phone) return json_({ ok: false, error: 'missing fields' });
+  if (!p.phone) return json_({ ok: false, error: 'missing phone' }); // chỉ bắt buộc SĐT; tên/địa chỉ hỏi qua điện thoại
   sheet_().appendRow([
     new Date(), p.name, "'" + p.phone, p.city || '', p.address || '', p.package || '',
     Number(p.cans) || '', Number(p.total) || '', p.payment || 'COD', p.event_id || '',
